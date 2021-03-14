@@ -75,6 +75,9 @@ resource "vsphere_virtual_machine" "masters" {
   folder = var.masters_nodes_folder
   num_cpus = var.masters_node_cpu
   num_cores_per_socket = var.masters_node_cpu_per_socket
+  cpu_hot_add_enabled = true
+  cpu_hot_remove_enabled = true
+  memory_hot_add_enabled = true
   memory   = var.masters_node_memory
   memory_limit = var.masters_node_memory_limit
   guest_id = var.vm_guest_id
@@ -125,6 +128,9 @@ resource "vsphere_virtual_machine" "workers" {
   folder = var.workers_nodes_folder
   num_cpus = var.workers_node_cpu
   num_cores_per_socket = var.workers_node_cpu_per_socket
+  cpu_hot_add_enabled = true
+  cpu_hot_remove_enabled = true
+  memory_hot_add_enabled = true
   memory   = var.workers_node_memory
   memory_limit = var.workers_node_memory_limit
   guest_id = var.vm_guest_id
@@ -175,6 +181,9 @@ resource "vsphere_virtual_machine" "etcds" {
   folder = var.etcds_nodes_folder
   num_cpus = var.etcds_node_cpu
   num_cores_per_socket = var.etcds_node_cpu_per_socket
+  cpu_hot_add_enabled = true
+  cpu_hot_remove_enabled = true
+  memory_hot_add_enabled = true
   memory   = var.etcds_node_memory
   memory_limit = var.etcds_node_memory_limit
   guest_id = var.vm_guest_id
@@ -232,6 +241,9 @@ resource "vsphere_virtual_machine" "cephs" {
   folder = var.cephs_nodes_folder
   num_cpus = var.cephs_node_cpu
   num_cores_per_socket = var.cephs_node_cpu_per_socket
+  cpu_hot_add_enabled = true
+  cpu_hot_remove_enabled = true
+  memory_hot_add_enabled = true  
   memory   = var.cephs_node_memory
   memory_limit = var.cephs_node_memory_limit
   guest_id = var.vm_guest_id
