@@ -11,7 +11,7 @@ vcenter_cluster = ""
 
 #############################################
 
-project_folder = "TEST/TEST=PROJECT"
+project_folder = "TEST/TEST-PROJECT"
 masters_folder = "CONTROL-PLANES"
 workers_folder = "NODES"
 etcds_folder = "ETCDS"
