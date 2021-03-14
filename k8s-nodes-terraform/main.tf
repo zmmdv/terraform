@@ -31,7 +31,7 @@ data "vsphere_virtual_machine" "template" {
 }
 
 resource "vsphere_virtual_machine" "master" {
-  name             = "${var.master_node_name}${count.index}"
+  name             = "${var.master_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
   folder = var.master_nodes_folder
@@ -59,7 +59,7 @@ resource "vsphere_virtual_machine" "master" {
 
     customize {
       linux_options {
-        host_name = "${var.master_node_hostname}${count.index}"
+        host_name = "${var.master_node_hostname}${count.index + 1}"
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
