@@ -46,11 +46,11 @@ variable "dns_servers" {
   type = list(string)
 }
 
-##############################
-### Master Nodes Variables ###
-##############################
+###############################
+### Masters Nodes Variables ###
+###############################
 
-variable "master_node_count" {
+variable "masters_node_count" {
   type = number
 }
 
@@ -58,27 +58,27 @@ variable "masters_vcenter_network" {
   type = string
 }
 
-variable "master_node_name" {
+variable "masters_node_name" {
   type = string
 }
 
-variable "master_nodes_folder" {
+variable "masters_nodes_folder" {
   type = string
 }
 
-variable "master_node_cpu" {
+variable "masters_node_cpu" {
   type = number
 }
 
-variable "master_node_cpu_per_socket" {
+variable "masters_node_cpu_per_socket" {
   type = number
 }
 
-variable "master_node_memory" {
+variable "masters_node_memory" {
   type = number
 }
 
-variable "master_node_memory_limit" {
+variable "masters_node_memory_limit" {
   type = number
 }
 
@@ -94,7 +94,7 @@ variable "masters_disk_thin_provisioned" {
   type = string
 }
 
-variable "master_node_hostname" {
+variable "masters_node_hostname" {
   type = string
 }
 
@@ -102,7 +102,7 @@ variable "timezone" {
   type = string
 }
 
-variable "master_node_ip" {
+variable "masters_node_ip" {
   type = string
 }
 
@@ -115,40 +115,40 @@ variable "masters_default_gateway" {
 }
 
 
-##############################
-### Worker Nodes Variables ###
-##############################
+###############################
+### Workers Nodes Variables ###
+###############################
 
 
 variable "workers_vcenter_network" {
   type = string
 }
 
-variable "worker_node_name" {
+variable "workers_node_name" {
   type = string
 }
 
-variable "worker_nodes_folder" {
+variable "workers_nodes_folder" {
   type = string
 }
 
-variable "worker_node_cpu" {
+variable "workers_node_cpu" {
   type = number
 }
 
-variable "worker_node_cpu_per_socket" {
+variable "workers_node_cpu_per_socket" {
   type = number
 }
 
-variable "worker_node_memory" {
+variable "workers_node_memory" {
   type = number
 }
 
-variable "worker_node_memory_limit" {
+variable "workers_node_memory_limit" {
   type = number
 }
 
-variable "worker_node_count" {
+variable "workers_node_count" {
   type = number
 }
 
@@ -164,11 +164,11 @@ variable "workers_disk_thin_provisioned" {
   type = string
 }
 
-variable "worker_node_hostname" {
+variable "workers_node_hostname" {
   type = string
 }
 
-variable "worker_node_ip" {
+variable "workers_node_ip" {
   type = string
 }
 
@@ -179,3 +179,13 @@ variable "workers_ipv4_netmask" {
 variable "workers_default_gateway" {
   type = string
 }
+
+
+###############################
+### Storage Nodes Variables ###
+###############################
+
+
+#####################################
+### Elasticsearch Nodes Variables ###
+#####################################

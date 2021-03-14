@@ -34,17 +34,17 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
-resource "vsphere_virtual_machine" "master" {
-  name             = "${var.master_node_name}${count.index + 1}"
+resource "vsphere_virtual_machine" "masters" {
+  name             = "${var.masters_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.master_nodes_folder
-  num_cpus = var.master_node_cpu
-  num_cores_per_socket = var.master_node_cpu_per_socket
-  memory   = var.master_node_memory
-  memory_limit = var.master_node_memory_limit
+  folder = var.masters_nodes_folder
+  num_cpus = var.masters_node_cpu
+  num_cores_per_socket = var.masters_node_cpu_per_socket
+  memory   = var.masters_node_memory
+  memory_limit = var.masters_node_memory_limit
   guest_id = var.vm_guest_id
-  count = var.master_node_count
+  count = var.masters_node_count
 
 
   network_interface {
@@ -63,13 +63,13 @@ resource "vsphere_virtual_machine" "master" {
 
     customize {
       linux_options {
-        host_name = "${var.master_node_hostname}${count.index + 1}"
+        host_name = "${var.masters_node_hostname}${count.index + 1}"
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.master_node_ip}${count.index + 1}"
+        ipv4_address = "${var.masters_node_ip}${count.index + 1}"
         ipv4_netmask = var.masters_ipv4_netmask
       }
 
@@ -80,17 +80,17 @@ resource "vsphere_virtual_machine" "master" {
   }
 }
 
-resource "vsphere_virtual_machine" "worker" {
-  name             = "${var.worker_node_name}${count.index + 1}"
+resource "vsphere_virtual_machine" "workers" {
+  name             = "${var.workers_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.worker_nodes_folder
-  num_cpus = var.worker_node_cpu
-  num_cores_per_socket = var.worker_node_cpu_per_socket
-  memory   = var.worker_node_memory
-  memory_limit = var.worker_node_memory_limit
+  folder = var.workers_nodes_folder
+  num_cpus = var.workers_node_cpu
+  num_cores_per_socket = var.workers_node_cpu_per_socket
+  memory   = var.workers_node_memory
+  memory_limit = var.workers_node_memory_limit
   guest_id = var.vm_guest_id
-  count = var.worker_node_count
+  count = var.workers_node_count
 
 
   network_interface {
@@ -109,13 +109,13 @@ resource "vsphere_virtual_machine" "worker" {
 
     customize {
       linux_options {
-        host_name = "${var.worker_node_hostname}${count.index + 1}"
+        host_name = "${var.workers_node_hostname}${count.index + 1}"
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.worker_node_ip}${count.index + 1}"
+        ipv4_address = "${var.workers_node_ip}${count.index + 1}"
         ipv4_netmask = var.workers_ipv4_netmask
       }
 
