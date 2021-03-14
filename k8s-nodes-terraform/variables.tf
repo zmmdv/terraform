@@ -94,6 +94,10 @@ variable "master_node_hostname" {
   type = list(string)
 }
 
+variable "timezone" {
+  type = string
+}
+
 variable "master_node_ip" {
   type = list(string)
 }
