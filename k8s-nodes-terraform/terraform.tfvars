@@ -8,7 +8,18 @@ vcenter_ip = ""
 vcenter_datacenter = ""
 vcenter_datastore = ""
 vcenter_cluster = ""
-template = ""
+
+#############################################
+
+project_folder = "TEST/TEST=PROJECT"
+masters_folder = "CONTROL-PLANES"
+workers_folder = "NODES"
+etcds_folder = "ETCDS"
+cephs_folder = "CEPHS"
+
+#############################################
+
+template = "UBUNTU-2004-TMP"
 vm_guest_id = "ubuntu64Guest"
 vm_network_adapter_type = "vmxnet3"
 vm_domain = "local"

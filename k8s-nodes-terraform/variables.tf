@@ -46,6 +46,26 @@ variable "dns_servers" {
   type = list(string)
 }
 
+variable "project_folder" {
+  type = string
+}
+
+variable "masters_folder" {
+  type = string
+}
+
+variable "workers_folder" {
+  type = string
+}
+
+variable "etcds_folder" {
+  type = string
+}
+
+variable "cephs_folder" {
+  type = string
+}
+
 ###############################
 ### Masters Nodes Variables ###
 ###############################
@@ -59,10 +79,6 @@ variable "masters_vcenter_network" {
 }
 
 variable "masters_node_name" {
-  type = string
-}
-
-variable "masters_nodes_folder" {
   type = string
 }
 
@@ -128,9 +144,6 @@ variable "workers_node_name" {
   type = string
 }
 
-variable "workers_nodes_folder" {
-  type = string
-}
 
 variable "workers_node_cpu" {
   type = number
@@ -190,10 +203,6 @@ variable "etcds_vcenter_network" {
 }
 
 variable "etcds_node_name" {
-  type = string
-}
-
-variable "etcds_nodes_folder" {
   type = string
 }
 
@@ -262,10 +271,6 @@ variable "cephs_vcenter_network" {
 }
 
 variable "cephs_node_name" {
-  type = string
-}
-
-variable "cephs_nodes_folder" {
   type = string
 }
 

@@ -46,6 +46,44 @@ data "vsphere_network" "workers_network" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
+######################################
+### Folders for all infrastructure ###
+######################################
+
+resource "vsphere_folder" "project" {
+  path          = var.project_folder
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+}
+
+resource "vsphere_folder" "masters" {
+  path          = "${vsphere_folder.project.path}/${var.masters_folder}"
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+  depends_on = [ vsphere_folder.project ]
+}
+
+resource "vsphere_folder" "workers" {
+  path          = "${vsphere_folder.project.path}/${var.workers_folder}"
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+  depends_on = [ vsphere_folder.project ]
+}
+
+resource "vsphere_folder" "etcds" {
+  path          = "${vsphere_folder.project.path}/${var.etcds_folder}"
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+  depends_on = [ vsphere_folder.project ]
+}
+
+resource "vsphere_folder" "cephs" {
+  path          = "${vsphere_folder.project.path}/${var.cephs_folder}"
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+  depends_on = [ vsphere_folder.project ]
+}
+
 ##################################
 ### Separate network for Etcds ###
 ##################################
@@ -72,7 +110,7 @@ resource "vsphere_virtual_machine" "masters" {
   name             = "${var.masters_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.masters_nodes_folder
+  folder = "${vsphere_folder.project.path}/${var.masters_folder}"
   num_cpus = var.masters_node_cpu
   num_cores_per_socket = var.masters_node_cpu_per_socket
   cpu_hot_add_enabled = true
@@ -82,7 +120,7 @@ resource "vsphere_virtual_machine" "masters" {
   memory_limit = var.masters_node_memory_limit
   guest_id = var.vm_guest_id
   count = var.masters_node_count
-
+  depends_on = [ vsphere_folder.masters ]
 
   network_interface {
     network_id   = data.vsphere_network.masters_network.id
@@ -125,7 +163,7 @@ resource "vsphere_virtual_machine" "workers" {
   name             = "${var.workers_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.workers_nodes_folder
+  folder = "${vsphere_folder.project.path}/${var.workers_folder}"
   num_cpus = var.workers_node_cpu
   num_cores_per_socket = var.workers_node_cpu_per_socket
   cpu_hot_add_enabled = true
@@ -135,7 +173,7 @@ resource "vsphere_virtual_machine" "workers" {
   memory_limit = var.workers_node_memory_limit
   guest_id = var.vm_guest_id
   count = var.workers_node_count
-
+  depends_on = [ vsphere_folder.workers ]
 
   network_interface {
     network_id   = data.vsphere_network.workers_network.id
@@ -178,7 +216,7 @@ resource "vsphere_virtual_machine" "etcds" {
   name             = "${var.etcds_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.etcds_nodes_folder
+  folder = "${vsphere_folder.project.path}/${var.etcds_folder}"
   num_cpus = var.etcds_node_cpu
   num_cores_per_socket = var.etcds_node_cpu_per_socket
   cpu_hot_add_enabled = true
@@ -188,7 +226,7 @@ resource "vsphere_virtual_machine" "etcds" {
   memory_limit = var.etcds_node_memory_limit
   guest_id = var.vm_guest_id
   count = var.etcds_node_count
-
+  depends_on = [ vsphere_folder.etcds ]
 
   network_interface {
     network_id   = data.vsphere_network.etcds_network.id
@@ -238,7 +276,7 @@ resource "vsphere_virtual_machine" "cephs" {
   name             = "${var.cephs_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
   datastore_id     = data.vsphere_datastore.datastore.id
-  folder = var.cephs_nodes_folder
+  folder = "${vsphere_folder.project.path}/${var.cephs_folder}"
   num_cpus = var.cephs_node_cpu
   num_cores_per_socket = var.cephs_node_cpu_per_socket
   cpu_hot_add_enabled = true
@@ -248,7 +286,7 @@ resource "vsphere_virtual_machine" "cephs" {
   memory_limit = var.cephs_node_memory_limit
   guest_id = var.vm_guest_id
   count = var.cephs_node_count
-
+  depends_on = [ vsphere_folder.cephs ]
 
   network_interface {
     network_id   = data.vsphere_network.cephs_network.id
