@@ -1,4 +1,6 @@
+############################
 ### Main nodes Variables ###
+############################
 
 variable "vcenter_user" {
   type = string
@@ -44,7 +46,9 @@ variable "dns_servers" {
   type = list(string)
 }
 
+##############################
 ### Master Nodes Variables ###
+##############################
 
 variable "master_node_count" {
   type = number
@@ -110,3 +114,68 @@ variable "masters_default_gateway" {
   type = string
 }
 
+
+##############################
+### Worker Nodes Variables ###
+##############################
+
+
+variable "workers_vcenter_network" {
+  type = string
+}
+
+variable "worker_node_name" {
+  type = string
+}
+
+variable "worker_nodes_folder" {
+  type = string
+}
+
+variable "worker_node_cpu" {
+  type = number
+}
+
+variable "worker_node_cpu_per_socket" {
+  type = number
+}
+
+variable "worker_node_memory" {
+  type = number
+}
+
+variable "worker_node_memory_limit" {
+  type = number
+}
+
+variable "worker_node_count" {
+  type = number
+}
+
+variable "workers_disk_label" {
+  type = string
+}
+
+variable "workers_disk_size" {
+  type = number
+}
+
+variable "workers_disk_thin_provisioned" {
+  type = string
+}
+
+variable "worker_node_hostname" {
+  type = string
+}
+
+variable "worker_node_ip" {
+  type = string
+}
+
+variable "workers_ipv4_netmask" {
+  type = string
+}
+
+variable "workers_default_gateway" {
+  type = string
+}

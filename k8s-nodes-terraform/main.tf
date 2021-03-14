@@ -24,6 +24,10 @@ data "vsphere_network" "masters_network" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
+data "vsphere_network" "workers_network" {
+  name          = var.workers_vcenter_network
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+}
 
 data "vsphere_virtual_machine" "template" {
   name          = var.template
@@ -71,6 +75,52 @@ resource "vsphere_virtual_machine" "master" {
 
       dns_server_list = var.dns_servers
       ipv4_gateway = var.masters_default_gateway      
+
+    }
+  }
+}
+
+resource "vsphere_virtual_machine" "worker" {
+  name             = "${var.worker_node_name}${count.index + 1}"
+  resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  datastore_id     = data.vsphere_datastore.datastore.id
+  folder = var.worker_nodes_folder
+  num_cpus = var.worker_node_cpu
+  num_cores_per_socket = var.worker_node_cpu_per_socket
+  memory   = var.worker_node_memory
+  memory_limit = var.worker_node_memory_limit
+  guest_id = var.vm_guest_id
+  count = var.worker_node_count
+
+
+  network_interface {
+    network_id   = data.vsphere_network.workers_network.id
+    adapter_type = var.vm_network_adapter_type
+  }
+
+  disk {
+    label            = var.workers_disk_label
+    size             = var.workers_disk_size
+    thin_provisioned = var.workers_disk_thin_provisioned
+  }
+
+  clone {
+    template_uuid = data.vsphere_virtual_machine.template.id
+
+    customize {
+      linux_options {
+        host_name = "${var.worker_node_hostname}${count.index + 1}"
+        domain    = var.vm_domain
+        time_zone  = var.timezone
+      }
+
+      network_interface {
+        ipv4_address = "${var.worker_node_ip}${count.index + 1}"
+        ipv4_netmask = var.workers_ipv4_netmask
+      }
+
+      dns_server_list = var.dns_servers
+      ipv4_gateway = var.workers_default_gateway      
 
     }
   }
