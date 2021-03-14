@@ -61,7 +61,7 @@ resource "vsphere_virtual_machine" "master" {
       linux_options {
         host_name = "${var.master_node_hostname}${count.index}"
         domain    = var.vm_domain
-        timezone  = var.timezone
+        time_zone  = var.timezone
       }
 
       network_interface {
