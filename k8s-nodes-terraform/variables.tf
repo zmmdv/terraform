@@ -55,7 +55,7 @@ variable "masters_vcenter_network" {
 }
 
 variable "master_node_name" {
-  type = list(string)
+  type = string
 }
 
 variable "master_nodes_folder" {
@@ -91,7 +91,7 @@ variable "masters_disk_thin_provisioned" {
 }
 
 variable "master_node_hostname" {
-  type = list(string)
+  type = string
 }
 
 variable "timezone" {
@@ -99,7 +99,7 @@ variable "timezone" {
 }
 
 variable "master_node_ip" {
-  type = list(string)
+  type = string
 }
 
 variable "masters_ipv4_netmask" {
