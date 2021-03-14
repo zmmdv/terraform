@@ -65,7 +65,7 @@ resource "vsphere_virtual_machine" "master" {
       }
 
       network_interface {
-        ipv4_address = "${var.master_node_ip}${count.index}"
+        ipv4_address = "${var.master_node_ip}${count.index + 1}"
         ipv4_netmask = var.masters_ipv4_netmask
       }
 
