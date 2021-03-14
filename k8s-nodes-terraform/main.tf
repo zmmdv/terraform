@@ -1,3 +1,7 @@
+#####################
+### Main settings ###
+#####################
+
 provider "vsphere" {
   user = var.vcenter_user
   password = var.vcenter_password
@@ -19,20 +23,50 @@ data "vsphere_compute_cluster" "cluster" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
+data "vsphere_virtual_machine" "template" {
+  name          = var.template
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+}
+
+####################################
+### Separate network for Masters ###
+####################################
+
 data "vsphere_network" "masters_network" {
   name          = var.masters_vcenter_network
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
+
+####################################
+### Separate network for Workers ###
+####################################
 
 data "vsphere_network" "workers_network" {
   name          = var.workers_vcenter_network
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
-data "vsphere_virtual_machine" "template" {
-  name          = var.template
+##################################
+### Separate network for Etcds ###
+##################################
+
+data "vsphere_network" "etcds_network" {
+  name          = var.etcds_vcenter_network
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
+
+##################################
+### Separate network for Cephs ###
+##################################
+
+data "vsphere_network" "cephs_network" {
+  name          = var.cephs_vcenter_network
+  datacenter_id = data.vsphere_datacenter.datacenter.id
+}
+
+#################################
+### Resource for Master Nodes ###
+#################################
 
 resource "vsphere_virtual_machine" "masters" {
   name             = "${var.masters_node_name}${count.index + 1}"
@@ -80,6 +114,10 @@ resource "vsphere_virtual_machine" "masters" {
   }
 }
 
+#################################
+### Resource for Worker Nodes ###
+#################################
+
 resource "vsphere_virtual_machine" "workers" {
   name             = "${var.workers_node_name}${count.index + 1}"
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
@@ -121,6 +159,120 @@ resource "vsphere_virtual_machine" "workers" {
 
       dns_server_list = var.dns_servers
       ipv4_gateway = var.workers_default_gateway      
+
+    }
+  }
+}
+
+#################################
+### Resource for Etcd Nodes ###
+#################################
+
+resource "vsphere_virtual_machine" "etcds" {
+  name             = "${var.etcds_node_name}${count.index + 1}"
+  resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  datastore_id     = data.vsphere_datastore.datastore.id
+  folder = var.etcds_nodes_folder
+  num_cpus = var.etcds_node_cpu
+  num_cores_per_socket = var.etcds_node_cpu_per_socket
+  memory   = var.etcds_node_memory
+  memory_limit = var.etcds_node_memory_limit
+  guest_id = var.vm_guest_id
+  count = var.etcds_node_count
+
+
+  network_interface {
+    network_id   = data.vsphere_network.etcds_network.id
+    adapter_type = var.vm_network_adapter_type
+  }
+
+  disk {
+    label            = var.etcds_first_disk_label
+    size             = var.etcds_first_disk_size
+    thin_provisioned = var.etcds_disk_thin_provisioned
+  }
+
+  disk {
+    label            = var.etcds_second_disk_label
+    size             = var.etcds_second_disk_size
+    thin_provisioned = var.etcds_disk_thin_provisioned
+    unit_number      = "1"
+  }  
+
+  clone {
+    template_uuid = data.vsphere_virtual_machine.template.id
+
+    customize {
+      linux_options {
+        host_name = "${var.etcds_node_hostname}${count.index + 1}"
+        domain    = var.vm_domain
+        time_zone  = var.timezone
+      }
+
+      network_interface {
+        ipv4_address = "${var.etcds_node_ip}${count.index + 1}"
+        ipv4_netmask = var.etcds_ipv4_netmask
+      }
+
+      dns_server_list = var.dns_servers
+      ipv4_gateway = var.etcds_default_gateway      
+
+    }
+  }
+}
+
+###############################
+### Resource for Ceph Nodes ###
+###############################
+
+resource "vsphere_virtual_machine" "cephs" {
+  name             = "${var.cephs_node_name}${count.index + 1}"
+  resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  datastore_id     = data.vsphere_datastore.datastore.id
+  folder = var.cephs_nodes_folder
+  num_cpus = var.cephs_node_cpu
+  num_cores_per_socket = var.cephs_node_cpu_per_socket
+  memory   = var.cephs_node_memory
+  memory_limit = var.cephs_node_memory_limit
+  guest_id = var.vm_guest_id
+  count = var.cephs_node_count
+
+
+  network_interface {
+    network_id   = data.vsphere_network.cephs_network.id
+    adapter_type = var.vm_network_adapter_type
+  }
+
+  disk {
+    label            = var.cephs_first_disk_label
+    size             = var.cephs_first_disk_size
+    thin_provisioned = var.cephs_disk_thin_provisioned
+  }
+
+  disk {
+    label            = var.cephs_second_disk_label
+    size             = var.cephs_second_disk_size
+    thin_provisioned = var.cephs_disk_thin_provisioned
+    unit_number      = "1"
+  } 
+
+  clone {
+    template_uuid = data.vsphere_virtual_machine.template.id
+
+    customize {
+      linux_options {
+        host_name = "${var.cephs_node_hostname}${count.index + 1}"
+        domain    = var.vm_domain
+        time_zone  = var.timezone
+      }
+
+      network_interface {
+        ipv4_address = "${var.cephs_node_ip}${count.index + 1}"
+        ipv4_netmask = var.cephs_ipv4_netmask
+      }
+
+      dns_server_list = var.dns_servers
+      ipv4_gateway = var.cephs_default_gateway      
 
     }
   }

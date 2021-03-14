@@ -182,10 +182,145 @@ variable "workers_default_gateway" {
 
 
 ###############################
-### Storage Nodes Variables ###
+### Etcd Nodes Variables ###
 ###############################
 
+variable "etcds_vcenter_network" {
+  type = string
+}
 
-#####################################
-### Elasticsearch Nodes Variables ###
-#####################################
+variable "etcds_node_name" {
+  type = string
+}
+
+variable "etcds_nodes_folder" {
+  type = string
+}
+
+variable "etcds_node_cpu" {
+  type = number
+}
+
+variable "etcds_node_cpu_per_socket" {
+  type = number
+}
+
+variable "etcds_node_memory" {
+  type = number
+}
+
+variable "etcds_node_memory_limit" {
+  type = number
+}
+
+variable "etcds_node_count" {
+  type = number
+}
+
+variable "etcds_first_disk_label" {
+  type = string
+}
+
+variable "etcds_first_disk_size" {
+  type = number
+}
+
+variable "etcds_second_disk_label" {
+  type = string
+}
+
+variable "etcds_second_disk_size" {
+  type = number
+}
+
+variable "etcds_disk_thin_provisioned" {
+  type = string
+}
+
+variable "etcds_node_hostname" {
+  type = string
+}
+
+variable "etcds_node_ip" {
+  type = string
+}
+
+variable "etcds_ipv4_netmask" {
+  type = string
+}
+
+variable "etcds_default_gateway" {
+  type = string
+}
+
+############################
+### Ceph Nodes Variables ###
+############################
+
+variable "cephs_vcenter_network" {
+  type = string
+}
+
+variable "cephs_node_name" {
+  type = string
+}
+
+variable "cephs_nodes_folder" {
+  type = string
+}
+
+variable "cephs_node_cpu" {
+  type = number
+}
+
+variable "cephs_node_cpu_per_socket" {
+  type = number
+}
+
+variable "cephs_node_memory" {
+  type = number
+}
+
+variable "cephs_node_memory_limit" {
+  type = number
+}
+
+variable "cephs_node_count" {
+  type = number
+}
+
+variable "cephs_first_disk_label" {
+  type = string
+}
+
+variable "cephs_first_disk_size" {
+  type = number
+}
+
+variable "cephs_second_disk_label" {
+  type = string
+}
+
+variable "cephs_second_disk_size" {
+  type = number
+}
+
+variable "cephs_disk_thin_provisioned" {
+  type = string
+}
+
+variable "cephs_node_hostname" {
+  type = string
+}
+
+variable "cephs_node_ip" {
+  type = string
+}
+
+variable "cephs_ipv4_netmask" {
+  type = string
+}
+
+variable "cephs_default_gateway" {
+  type = string
+}
