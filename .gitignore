@@ -1,4 +1,6 @@
 change
 clean
 terraform.exe
-k8s.tfvars
+k8s.auto.tfvars
+terraform.tfstate*
+.terraform*

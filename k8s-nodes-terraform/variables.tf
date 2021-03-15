@@ -22,6 +22,11 @@ variable "vcenter_datastore" {
   type = string
 }
 
+# variable "vcenter_datastore_cluster" {
+#   type = string
+# }
+
+
 variable "vcenter_cluster" {
   type = string
 }
@@ -79,7 +84,7 @@ variable "masters_vcenter_network" {
 }
 
 variable "masters_node_name" {
-  type = string
+  type = list(string)
 }
 
 variable "masters_node_cpu" {
@@ -111,7 +116,7 @@ variable "masters_disk_thin_provisioned" {
 }
 
 variable "masters_node_hostname" {
-  type = string
+  type = list(string)
 }
 
 variable "timezone" {
@@ -119,7 +124,7 @@ variable "timezone" {
 }
 
 variable "masters_node_ip" {
-  type = string
+  type = list(string)
 }
 
 variable "masters_ipv4_netmask" {
@@ -141,7 +146,7 @@ variable "workers_vcenter_network" {
 }
 
 variable "workers_node_name" {
-  type = string
+  type = list(string)
 }
 
 
@@ -178,11 +183,11 @@ variable "workers_disk_thin_provisioned" {
 }
 
 variable "workers_node_hostname" {
-  type = string
+  type = list(string)
 }
 
 variable "workers_node_ip" {
-  type = string
+  type = list(string)
 }
 
 variable "workers_ipv4_netmask" {
@@ -203,7 +208,7 @@ variable "etcds_vcenter_network" {
 }
 
 variable "etcds_node_name" {
-  type = string
+  type = list(string)
 }
 
 variable "etcds_node_cpu" {
@@ -247,11 +252,11 @@ variable "etcds_disk_thin_provisioned" {
 }
 
 variable "etcds_node_hostname" {
-  type = string
+  type = list(string)
 }
 
 variable "etcds_node_ip" {
-  type = string
+  type = list(string)
 }
 
 variable "etcds_ipv4_netmask" {
@@ -271,7 +276,7 @@ variable "cephs_vcenter_network" {
 }
 
 variable "cephs_node_name" {
-  type = string
+  type = list(string)
 }
 
 variable "cephs_node_cpu" {
@@ -315,11 +320,11 @@ variable "cephs_disk_thin_provisioned" {
 }
 
 variable "cephs_node_hostname" {
-  type = string
+  type = list(string)
 }
 
 variable "cephs_node_ip" {
-  type = string
+  type = list(string)
 }
 
 variable "cephs_ipv4_netmask" {

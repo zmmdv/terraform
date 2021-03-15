@@ -18,6 +18,11 @@ data "vsphere_datastore" "datastore" {
   datacenter_id = data.vsphere_datacenter.datacenter.id
 }
 
+# data "vsphere_datastore_cluster" "datastore_cluster" {
+#   name          = var.vcenter_datastore_cluster
+#   datacenter_id = data.vsphere_datacenter.datacenter.id
+# }
+
 data "vsphere_compute_cluster" "cluster" {
   name          = var.vcenter_cluster
   datacenter_id = data.vsphere_datacenter.datacenter.id
@@ -107,8 +112,9 @@ data "vsphere_network" "cephs_network" {
 #################################
 
 resource "vsphere_virtual_machine" "masters" {
-  name             = "${var.masters_node_name}${count.index + 1}"
+  name             = var.masters_node_name[count.index]
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  # datastore_cluster_id     = data.vsphere_datastore_cluster.datastore_cluster.id
   datastore_id     = data.vsphere_datastore.datastore.id
   folder = "${vsphere_folder.project.path}/${var.masters_folder}"
   num_cpus = var.masters_node_cpu
@@ -138,13 +144,13 @@ resource "vsphere_virtual_machine" "masters" {
 
     customize {
       linux_options {
-        host_name = "${var.masters_node_hostname}${count.index + 1}"
+        host_name = var.masters_node_hostname[count.index]
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.masters_node_ip}${count.index + 1}"
+        ipv4_address = var.masters_node_ip[count.index]
         ipv4_netmask = var.masters_ipv4_netmask
       }
 
@@ -160,8 +166,9 @@ resource "vsphere_virtual_machine" "masters" {
 #################################
 
 resource "vsphere_virtual_machine" "workers" {
-  name             = "${var.workers_node_name}${count.index + 1}"
+  name             = var.workers_node_name[count.index]
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  # datastore_cluster_id     = data.vsphere_datastore_cluster.datastore_cluster.id  
   datastore_id     = data.vsphere_datastore.datastore.id
   folder = "${vsphere_folder.project.path}/${var.workers_folder}"
   num_cpus = var.workers_node_cpu
@@ -191,13 +198,13 @@ resource "vsphere_virtual_machine" "workers" {
 
     customize {
       linux_options {
-        host_name = "${var.workers_node_hostname}${count.index + 1}"
+        host_name = var.workers_node_hostname[count.index]
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.workers_node_ip}${count.index + 1}"
+        ipv4_address = var.workers_node_ip[count.index]
         ipv4_netmask = var.workers_ipv4_netmask
       }
 
@@ -213,8 +220,9 @@ resource "vsphere_virtual_machine" "workers" {
 #################################
 
 resource "vsphere_virtual_machine" "etcds" {
-  name             = "${var.etcds_node_name}${count.index + 1}"
+  name             = var.etcds_node_name[count.index]
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  # datastore_cluster_id     = data.vsphere_datastore_cluster.datastore_cluster.id
   datastore_id     = data.vsphere_datastore.datastore.id
   folder = "${vsphere_folder.project.path}/${var.etcds_folder}"
   num_cpus = var.etcds_node_cpu
@@ -251,13 +259,13 @@ resource "vsphere_virtual_machine" "etcds" {
 
     customize {
       linux_options {
-        host_name = "${var.etcds_node_hostname}${count.index + 1}"
+        host_name = var.etcds_node_hostname[count.index]
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.etcds_node_ip}${count.index + 1}"
+        ipv4_address = var.etcds_node_ip[count.index]
         ipv4_netmask = var.etcds_ipv4_netmask
       }
 
@@ -273,8 +281,9 @@ resource "vsphere_virtual_machine" "etcds" {
 ###############################
 
 resource "vsphere_virtual_machine" "cephs" {
-  name             = "${var.cephs_node_name}${count.index + 1}"
+  name             = var.cephs_node_name[count.index]
   resource_pool_id = data.vsphere_compute_cluster.cluster.resource_pool_id
+  # datastore_cluster_id     = data.vsphere_datastore_cluster.datastore_cluster.id
   datastore_id     = data.vsphere_datastore.datastore.id
   folder = "${vsphere_folder.project.path}/${var.cephs_folder}"
   num_cpus = var.cephs_node_cpu
@@ -311,13 +320,13 @@ resource "vsphere_virtual_machine" "cephs" {
 
     customize {
       linux_options {
-        host_name = "${var.cephs_node_hostname}${count.index + 1}"
+        host_name = var.cephs_node_hostname[count.index]
         domain    = var.vm_domain
         time_zone  = var.timezone
       }
 
       network_interface {
-        ipv4_address = "${var.cephs_node_ip}${count.index + 1}"
+        ipv4_address = var.cephs_node_ip[count.index]
         ipv4_netmask = var.cephs_ipv4_netmask
       }
 
