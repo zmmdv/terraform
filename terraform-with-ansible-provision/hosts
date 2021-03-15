@@ -1,0 +1,31 @@
+[all:vars]
+##the user for playbook execution
+ansible_user=root
+
+##Private key or password for SSH connection leave commented if you use --ask-pass
+
+#private_key_file=~/.ssh/id_rsa
+ansible_ssh_pass=123
+
+##Docker-CE version
+docker_version=20.10.5
+
+##The version of kubernetes cluster you will bootstrap
+
+kubeadm_version =1.20.4
+kubelet_version =1.20.4
+kubectl_version =1.20.4
+
+[all]
+
+vmfssomaster01 ansible_host=10.251.107.1
+vmfssoworker01 ansible_host=10.251.107.2
+vmfssoworker02 ansible_host=10.251.107.3
+
+[master]
+vmfssomaster01
+
+[workers]
+
+vmfssoworker01
+vmfssoworker02

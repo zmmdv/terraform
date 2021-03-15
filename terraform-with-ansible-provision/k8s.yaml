@@ -1,0 +1,252 @@
+
+- hosts: all
+  become: yes
+  tasks:
+
+  - name: Install open-vm-tools
+    yum:
+     name: open-vm-tools
+     state: latest
+
+  - name: Yum update after os intallation
+    yum:
+     name: '*'
+     state: latest
+     update_cache: yes
+
+#Preparation for Kubernetes cluster installation
+
+  - name: add every machine to hosts file
+    lineinfile:
+      dest: /etc/hosts
+      line: "{{ hostvars[item].ansible_host }}     {{ hostvars[item].inventory_hostname_short }}"
+      state: present
+    with_items: "{{ groups.all }}"
+
+  - name: Masqarade firewall
+    firewalld:
+      masquerade: yes
+      state: enabled
+      permanent: true
+      immediate: yes
+
+  - name: Disabling Selinux
+    selinux:
+      state: disabled
+  - name: disable swap
+    shell: /usr/sbin/swapoff -a
+
+  - name: remove swapfile from /etc/fstab
+    mount:
+     path: swap
+     fstype: swap
+     state: absent
+
+  - name: Rebooting the machine
+    reboot:
+     msg: " rebooting after installing os and update"
+
+  - name: Add Docker repo
+    get_url:
+      url: https://download.docker.com/linux/centos/docker-ce.repo
+      dest: /etc/yum.repos.d/docer-ce.repo
+    become: yes
+
+  - name: Installing Docker-CE
+    yum:
+     name:
+     - docker-ce-{{ docker_version }}
+     - docker-ce-cli-{{ docker_version }}
+     state: latest
+
+  - name: Creates directory for docker daemon
+    file:
+      path: /etc/docker
+      state: directory
+
+  - name: Changing Cgroup Driver
+    shell: |    
+       cat > /etc/docker/daemon.json <<EOF
+       {
+         "exec-opts": ["native.cgroupdriver=systemd"],
+          "log-driver": "json-file",
+          "log-opts": {
+            "max-size": "100m"
+           },
+           "storage-driver": "overlay2"
+        }
+        EOF
+    args:
+      executable: /bin/bash
+
+  - name: Just force systemd to reread configs
+    ansible.builtin.systemd:
+      daemon_reload: yes
+
+  - name: Start and enable Docker
+    systemd:
+     name: docker
+     enabled: yes
+     state: started
+
+  - name: Create the 'kubeadmin' user
+    user:
+      name: kubeadmin
+      append: yes
+      state: present
+      createhome: yes
+      shell: /bin/bash
+
+  - name: Allow 'kubeadmin' to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      line: 'kubeadmin ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+
+  - name: Set authorized key for user kubeadmin copying it from current user
+    authorized_key:
+     user: kubeadmin
+     state: present
+     key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+#Beginning installation of Kubernetes cluster for your nodes
+
+  - name: Letting iptables see bridged traffic
+    sysctl:
+     name: "{{ item.name }}"
+     value: "{{ item.value }}"
+     sysctl_file: /etc/sysctl.d/k8s.conf
+    with_items:
+    - name: net.bridge.bridge-nf-call-ip6tables
+      value: '1'
+    - name: net.bridge.bridge-nf-call-iptables
+      value: '1'
+    - name: net.ipv4.ip_forward
+      value: '1'
+
+  - name: Add Kubernetes yum repos
+    yum_repository:
+     name: Kubernetes
+     description: Kubernetes YUM repo
+     baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+     gpgcheck: yes
+     gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+  - name: Installing kubelet
+    yum:
+      name: kubelet-{{ kubelet_version }}
+      state: present
+
+  - name: Installing kubeadm
+    yum:
+      name: kubeadm-{{ kubeadm_version }}
+      state: present
+
+  - name: Enabling kubelet
+    systemd:
+     name: kubelet
+     enabled: yes
+     state: started
+
+- hosts: master
+  become: yes
+  tasks:
+  - name: install kubectl
+    yum:
+     name: kubectl-{{ kubectl_version }}
+     state: present
+ 
+  - name: Port range for kubernetes master nodes
+    firewalld:
+     port: "{{ item }}"
+     state: enabled
+     permanent: yes
+     immediate: yes
+    with_items:
+     - 6443/tcp
+     - 2379/tcp
+     - 2380/tcp
+     - 10250/tcp
+     - 10251/tcp
+     - 6783/udp
+     - 6784/udp
+     - 6783/tcp
+     - 6781/tcp
+     - 6782/tcp
+   
+   
+#Creating cluster with kubeadm
+
+- hosts: master
+  become: yes
+  tasks:
+  - name: initialize the cluster
+    shell: kubeadm init
+    args:
+     chdir: $HOME
+     creates: cluster_initialized.txt
+
+  - name: create .kube directory
+    become: yes
+    become_user: kubeadmin
+    file:
+     path: $HOME/.kube
+     state: directory
+     mode: 0755
+
+  - name: copy admin.conf to user's kube config
+    copy:
+     src: /etc/kubernetes/admin.conf
+     dest: /home/kubeadmin/.kube/config
+     remote_src: yes
+     owner: kubeadmin
+
+  - name: install Pod network
+    become: yes
+    become_user: kubeadmin
+    shell: kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+    args:
+     chdir: $HOME
+     creates: pod_network_setup.txt
+
+
+- hosts: workers
+  become: yes
+  tasks:
+
+  - name: Port range for kubernetes worker nodes
+    firewalld:
+     port: "{{ item }}"
+     state: enabled
+     permanent: yes
+     immediate: yes
+    with_items:
+     - 10250/tcp
+     - 6783/udp
+     - 6784/udp
+     - 6783/tcp
+     - 6781/tcp
+     - 6782/tcp
+
+- hosts: master
+  become: yes
+  gather_facts: false
+  tasks:
+
+  - name: Generate join command
+    command: kubeadm token create --print-join-command
+    register: join_command
+
+  - name: Copy join command to local file
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+
+
+- hosts: workers
+  become: yes
+  tasks:
+
+  - name: Copy the join command to server location
+    copy: src=join-command dest=/tmp/join-command.sh mode=0777
+
+  - name: Join the node to cluster
+    command: sh /tmp/join-command.sh
